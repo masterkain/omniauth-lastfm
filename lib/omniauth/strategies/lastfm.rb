@@ -14,7 +14,8 @@ module OmniAuth
       option :name, "lastfm"
       option :client_options, {
         :authorize_path => "/api/auth",
-        :site           => "http://www.last.fm"
+        :site           => "http://www.last.fm",
+        :api_url        => "http://ws.audioscrobbler.com/2.0/",
       }
 
       attr_reader :json
@@ -29,38 +30,60 @@ module OmniAuth
       end
 
       def callback_phase
+        @json = {}
         token = request.params["token"]
-        params = { :api_key => options.api_key }
-        params[:token] = token
-        params[:api_sig] = signature(token)
-        params[:method] = "auth.getSession"
-        params[:format] = "json"
-        response = RestClient.get("http://ws.audioscrobbler.com/2.0/", { :params => params })
-        @json = MultiJson.decode(response.to_s)
+        begin
+          params = { :api_key => options.api_key,
+                     :token   => token,
+                     :api_sig =>  signature(token),
+                     :method  => "auth.getSession",
+                     :format  => 'json'}
+          response = RestClient.get(options.client_options.api_url, { :params => params })
+          session = MultiJson.decode(response.to_s)
+          @json.merge!(session)
+
+          params = {:api_key  => options.api_key,
+                    :user     => @json['session']['name'],
+                    :method   => 'user.getInfo',
+                    :format   => 'json'}
+          response = RestClient.get(options.client_options.api_url, { :params => params })
+          user = MultiJson.decode(response.to_s)
+          @json.merge!(user)
+        rescue ::RestClient::Exception
+          raise ::Timeout::Error
+        end
         super
       end
 
-      uid { raw_info["name"] }
+      uid do
+        @json['session']['name']
+      end
 
       info do
-        { :name => raw_info["name"] }
+        {
+          :nickname =>  @json['user']['name'],
+          :name     =>  @json['user']['realname'],
+          :url      =>  @json['user']['url'],
+          :image    =>  @json['user']['image'].instance_of?(Array) ? @json['user']['image'].last['#text'] :  @json['user']['image'],
+          :country  =>  @json['user']['country'],
+          :age      =>  @json['user']['age'],
+          :gender   =>  @json['user']['age'],
+        }
       end
 
       extra do
-        { :raw_info => raw_info }
+        { :raw_info => @json['user'] }
       end
 
       credentials do
-        { :token => raw_info["key"] }
-      end
-
-      def raw_info
-        @raw_info ||= @json["session"]
-      rescue ::RestClient::Exception
-        raise ::Timeout::Error
+        {
+          :token => @json['session']['key'],
+          :name  => @json['session']['name'],
+        }
       end
 
       protected
+
       def signature(token)
         sign = "api_key#{options.api_key}methodauth.getSessiontoken#{token}#{options.secret_key}"
         Digest::MD5.hexdigest(sign)
