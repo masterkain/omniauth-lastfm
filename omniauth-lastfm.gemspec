@@ -4,7 +4,7 @@ require "omniauth-lastfm/version"
 
 Gem::Specification.new do |s|
   s.name        = "omniauth-lastfm"
-  s.version     = Omniauth::Lastfm::VERSION
+  s.version     = OmniAuth::Lastfm::VERSION
   s.authors     = ["Claudio Poli"]
   s.email       = ["claudio@audiobox.fm"]
   s.homepage    = "http://github.com/masterkain/omniauth-lastfm"
@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_development_dependency "rspec", "~> 2.7"
+  s.add_development_dependency "rspec", "~> 2.10"
   s.add_development_dependency "rack-test"
   s.add_development_dependency "simplecov"
   s.add_development_dependency "webmock"
