@@ -67,7 +67,7 @@ module OmniAuth
           :image    =>  @json['user']['image'].instance_of?(Array) ? @json['user']['image'].last['#text'] :  @json['user']['image'],
           :country  =>  @json['user']['country'],
           :age      =>  @json['user']['age'],
-          :gender   =>  @json['user']['age'],
+          :gender   =>  @json['user']['gender'],
         }
       end
 
