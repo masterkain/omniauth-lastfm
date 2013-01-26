@@ -22,7 +22,7 @@ Usage of the gem is very similar to other OmniAuth 1.0 strategies. You'll need t
 	  provider :lastfm, "consumer_key", "consumer_secret"
 	end
 
-Now simply follow the README at: https://github.com/intridea/omniauth
+Now simply follow the README at: https://github.com/intridea/omniauth.
 
 Auth Hash Schema
 ----------------
