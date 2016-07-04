@@ -5,6 +5,14 @@ describe OmniAuth::Strategies::Lastfm do
     OmniAuth::Strategies::Lastfm.new({})
   end
 
+  context 'setting callback url in devise.rb' do
+    it 'should have the correct callback url' do
+      url = 'http://www.internet.com/users/auth/lastfm/callback'
+      result = OmniAuth::Strategies::Lastfm.new(:lastfm, callback_url: url)
+      result.options.callback_url.should eq(url)
+    end
+  end
+
   context 'client options' do
     it 'should have the correct name' do
       subject.options.name.should eq('lastfm')
