@@ -25,7 +25,7 @@ module OmniAuth
           :api_key => options.api_key,
           :cb      => options.client_options["callback"]
         }
-        query_string = params.map{ |key,value| "#{key}=#{value}" }.join("&")
+        query_string = prune!(params).map{ |key,value| "#{key}=#{value}" }.join("&")
         redirect "#{options.client_options.site}#{options.client_options.authorize_path}/?#{query_string}"
       end
 
@@ -88,6 +88,15 @@ module OmniAuth
         sign = "api_key#{options.api_key}methodauth.getSessiontoken#{token}#{options.secret_key}"
         Digest::MD5.hexdigest(sign)
       end
+
+
+      def prune!(hash)
+        hash.delete_if do |_, v|
+          prune!(v) if v.is_a?(Hash)
+          v.nil? || (v.respond_to?(:empty?) && v.empty?)
+        end
+      end
+
     end
   end
 end
