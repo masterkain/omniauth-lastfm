@@ -6,10 +6,13 @@ describe OmniAuth::Strategies::Lastfm do
   end
 
   context 'setting callback url in devise.rb' do
-    it 'should have the correct callback url' do
-      url = 'http://www.internet.com/users/auth/lastfm/callback'
-      result = OmniAuth::Strategies::Lastfm.new(:lastfm, callback_url: url)
-      result.options.callback_url.should eq(url)
+    let(:url) { 'https://localhost:1337/auth/lastfm/callback' }
+    let(:client) { OmniAuth::Strategies::Lastfm.new(:lastfm, client_options: { callback: url})}
+
+    it 'should use the callback url' do
+      client.should_receive(:redirect)
+        .with("http://www.last.fm/api/auth/?&cb=https://localhost:1337/auth/lastfm/callback")
+      client.request_phase
     end
   end
 

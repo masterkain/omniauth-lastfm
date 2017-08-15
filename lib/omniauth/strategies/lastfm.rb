@@ -23,8 +23,7 @@ module OmniAuth
       def request_phase
         params = {
           :api_key => options.api_key,
-          # set callback url if it is set in devise config
-          :cb      => options.callback_url
+          :cb      => options.client_options["callback"]
         }
         query_string = params.map{ |key,value| "#{key}=#{value}" if value }.join("&")
         redirect "#{options.client_options.site}#{options.client_options.authorize_path}/?#{query_string}"

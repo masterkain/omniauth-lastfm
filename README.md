@@ -17,12 +17,17 @@ Usage
 You'll need an API account with Last.fm, you can get one here - http://www.last.fm/api. 
 
 Usage of the gem is very similar to other OmniAuth 1.0 strategies. You'll need to add your API keys to `config/initializers/omniauth.rb`:
-
+```ruby
 	Rails.application.config.middleware.use OmniAuth::Builder do
 	  provider :lastfm, "consumer_key", "consumer_secret"
 	end
-
+```
 Now simply follow the README at: https://github.com/intridea/omniauth.
+
+*Note: When setting the callback url,* please note that last.fm does not give an option for multiple urls and this field cannot be edited after account creation. To override this url, (for example, in development mode) you may pass a `callback` parameter inside the `client_options` hash:
+```ruby
+provider :lastfm, "consumer_key", "consumer_secret", client_options: { callback: 'http://localhost:3000/path/to/auth/callback'}
+```
 
 Auth Hash Schema
 ----------------
